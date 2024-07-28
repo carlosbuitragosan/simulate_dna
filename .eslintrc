@@ -1,0 +1,22 @@
+{
+  "extends": [
+    "wesbos"
+  ],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "singleQuote": true,
+        "endOfLine": "auto",
+        "tabWidth": 4
+      }
+    ],
+    "no-plusplus": "off",
+    "import/no-mutable-exports": "off",
+    "no-unused-vars": "off",
+    "camelcase": "off",
+    "no-unused-expressions": "off",
+    "ignoreNonDeclaration": "off"
+  }
+}
+//ignoreNonDeclaration When set to true, the rule allows chains that don’t include initializing a variable in a declaration 

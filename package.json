@@ -1,0 +1,23 @@
+{
+  "name": "simulate_dna",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "jest",
+    "dev": "jest --watchAll --updateSnapshot",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "jest": {
+    "setupFilesAfterEnv": ["./jest.setup.js"]
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "eslint-config-wesbos": "^4.0.1",
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.2"
+  }
+}
