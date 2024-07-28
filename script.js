@@ -32,10 +32,21 @@ const pilaFactory = (id, dnaStrand) => ({
                 matchCount++;
             }
         }
-        const percentage = ((matchCount / this.dna.length) * 100).toFixed(0);
+        const percentage = Math.round((matchCount / this.dna.length) * 100);
         console.log(
             `Specimen #${this.specimenNum} and Specimen #${otherPila.specimenNum} have ${percentage}% DNA in common.`,
         );
+    },
+
+    willLikelySurvive() {
+        let matchCout = 0;
+        for (let i = 0; i < this.dna.length; i++) {
+            if (this.dna[i] === 'C' || this.dna[i] === 'G') {
+                matchCout++;
+            }
+        }
+        const percentage = Math.round((matchCout / this.dna.length) * 100);
+        return percentage >= 60;
     },
 });
 

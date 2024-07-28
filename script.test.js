@@ -108,3 +108,45 @@ describe('compareDNA()', () => {
         expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
     });
 });
+
+describe('willLikelySurvive()', () => {
+    const dnaStrand = mockUpStrand();
+    const pila1 = pilaFactory(1, dnaStrand);
+
+    it('is a method of a new pila', () => {
+        expect(pila1).toHaveProperty('willLikelySurvive');
+        expect(typeof pila1.willLikelySurvive).toBe('function');
+    });
+    it('returns a boolean', () => {
+        const result = pila1.willLikelySurvive();
+        expect(typeof result).toBe('boolean');
+    });
+    it('returns true if 60% or more of the strand is "C" or "G"', () => {
+        const dnaStrand1 = [
+            'C',
+            'C',
+            'G',
+            'G',
+            'C',
+            'C',
+            'G',
+            'C',
+            'G',
+            'A',
+            'T',
+            'A',
+            'T',
+            'T',
+            'A',
+        ];
+        const pila4 = pilaFactory(1, dnaStrand1);
+        const result = pila4.willLikelySurvive();
+        expect(result).toBe(true);
+    });
+    it('returns falls for a strand with no "C" or "G"', () => {
+        const strand = new Array(15).fill('A');
+        const pila5 = pilaFactory(5, strand);
+        const result = pila5.willLikelySurvive();
+        expect(result).toBe(false);
+    });
+});
