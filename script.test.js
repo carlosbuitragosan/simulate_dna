@@ -70,3 +70,41 @@ describe('pilaFactory.mutate()', () => {
         expect(typeof mutatedPila.compareDNA).toBe('function');
     });
 });
+
+describe('compareDNA()', () => {
+    let consoleSpy;
+    const dnaStrand1 = mockUpStrand();
+    const dnaStrand2 = mockUpStrand();
+    const pila1 = pilaFactory(1, dnaStrand1);
+    const pila2 = pilaFactory(2, dnaStrand1);
+    const pila3 = pilaFactory(3, dnaStrand2);
+    beforeEach(() => {
+        consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+        consoleSpy.mockRestore();
+    });
+
+    it('should compare dna strans. Test should match 100%', () => {
+        pila1.compareDNA(pila2);
+        const expectedPercentage = 100.0;
+        const expectedMessage = `Specimen #1 and Specimen #2 have ${expectedPercentage}% DNA in common.`;
+        expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+    });
+    it('should log a percentage of dna in common', () => {
+        pila1.compareDNA(pila3);
+
+        let match = 0;
+        for (let i = 0; i < pila1.dna.length; i++) {
+            if (pila1.dna[i] === pila3.dna[i]) {
+                match++;
+            }
+        }
+        const expectedPercentage = ((match / pila1.dna.length) * 100).toFixed(
+            0,
+        );
+        const expectedMessage = `Specimen #1 and Specimen #3 have ${expectedPercentage}% DNA in common.`;
+        expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+    });
+});

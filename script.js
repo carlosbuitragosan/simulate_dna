@@ -32,7 +32,7 @@ const pilaFactory = (id, dnaStrand) => ({
                 matchCount++;
             }
         }
-        const percentage = ((matchCount / this.dna.length) * 100).toFixed(2);
+        const percentage = ((matchCount / this.dna.length) * 100).toFixed(0);
         console.log(
             `Specimen #${this.specimenNum} and Specimen #${otherPila.specimenNum} have ${percentage}% DNA in common.`,
         );
