@@ -16,6 +16,7 @@ const mockUpStrand = () => {
 const pilaFactory = (id, dnaStrand) => ({
     specimenNum: id,
     dna: dnaStrand,
+
     mutate() {
         const randomBase = Math.floor(Math.random() * this.dna.length);
         let newBase = returnRandBase();
@@ -25,6 +26,7 @@ const pilaFactory = (id, dnaStrand) => ({
         this.dna[randomBase] = newBase;
         return this;
     },
+
     compareDNA(otherPila) {
         let matchCount = 0;
         for (let i = 0; i < this.dna.length; i++) {
@@ -50,4 +52,25 @@ const pilaFactory = (id, dnaStrand) => ({
     },
 });
 
-module.exports = { returnRandBase, mockUpStrand, pilaFactory };
+const strong30 = () => {
+    const result = [];
+    let id = 1;
+
+    while (result.length < 30) {
+        const dnaStrand = mockUpStrand();
+        const pila = pilaFactory(id, dnaStrand);
+
+        if (pila.willLikelySurvive()) {
+            result.push(pila);
+            id++;
+        }
+    }
+    return result;
+};
+
+module.exports = {
+    returnRandBase,
+    mockUpStrand,
+    pilaFactory,
+    strong30,
+};

@@ -1,4 +1,9 @@
-const { returnRandBase, mockUpStrand, pilaFactory } = require('./script.js');
+const {
+    returnRandBase,
+    mockUpStrand,
+    pilaFactory,
+    strong30,
+} = require('./script.js');
 
 describe('returnRandBase()', () => {
     it('return a base at random either "A", "T", "C" or "G"', () => {
@@ -148,5 +153,54 @@ describe('willLikelySurvive()', () => {
         const pila5 = pilaFactory(5, strand);
         const result = pila5.willLikelySurvive();
         expect(result).toBe(false);
+    });
+});
+
+describe('strong30()', () => {
+    let result;
+
+    beforeEach(() => {
+        result = strong30();
+    });
+    it('returns an array', () => {
+        expect(Array.isArray(result)).toBe(true);
+    });
+    it('returns an array with exactly 30 pila objects', () => {
+        expect(result.length).toEqual(30);
+        expect(result.length).not.toEqual(25);
+    });
+    test('all dna strands in the array are likely to survive', () => {
+        const listOfSurvivors = result.map((pila) => pila.willLikelySurvive());
+        const willAllSurvive = listOfSurvivors.every(
+            (didIsurvive) => didIsurvive,
+        );
+        expect(willAllSurvive).toBe(true);
+    });
+    test('it returns false when 1 pila is replaced with one will no tsurvive', () => {
+        // Function to create a Pila instance that is not likely to survive
+        const createNonSurvivor = () => {
+            let nonSurvivor;
+
+            do {
+                const dnaStrand = mockUpStrand();
+                nonSurvivor = pilaFactory(31, dnaStrand);
+            } while (nonSurvivor.willLikelySurvive());
+            return nonSurvivor;
+        };
+
+        // Function to replace one item in the array with a non-surviving Pila
+        const replaceWithNonSurvivor = (array) => {
+            const nonSurvivor = createNonSurvivor();
+            array[0] = nonSurvivor;
+        };
+        // creates an array with 30 pila and replaces 1 with an unhealthy one.
+        const strong29 = strong30();
+        replaceWithNonSurvivor(strong29);
+
+        // checks that all items return true
+        const willAllSurvive = strong29.every((pila) =>
+            pila.willLikelySurvive(),
+        );
+        expect(willAllSurvive).toBe(false);
     });
 });
