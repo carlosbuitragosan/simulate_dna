@@ -3,43 +3,49 @@ const {
     mockUpStrand,
     pilaFactory,
     strong30,
+    findMostRelated,
 } = require('./script.js');
 
 describe('returnRandBase()', () => {
-    it('return a base at random either "A", "T", "C" or "G"', () => {
-        const bases = ['A', 'T', 'C', 'G'];
+    const bases = ['A', 'T', 'C', 'G'];
+    const nonBases = ['E', 'S', 'B', 'H', 'Y', 'Z'];
+
+    it('should return one of the valid bases: "A", "T", "C", or "G"', () => {
         const result = returnRandBase();
         expect(bases).toContain(result);
     });
     it('testing with other non-base letters', () => {
-        const nonBases = ['E', 'S', 'B', 'H', 'Y', 'Z'];
         const result = returnRandBase();
         expect(nonBases).not.toContain(result);
     });
 });
 
 describe('mockUpStrand()', () => {
+    const valtestIdBases = ['A', 'T', 'C', 'G'];
+    const result = mockUpStrand();
+
     it('should return an array with 15 elements', () => {
-        const result = mockUpStrand();
         expect(result).toHaveLength(15);
     });
     it('should contain only A, T, C, or G', () => {
-        const valtestIdBases = ['A', 'T', 'C', 'G'];
-        const result = mockUpStrand();
         result.forEach((base) => expect(valtestIdBases).toContain(base));
     });
 });
 
 describe('pilaFactory()', () => {
-    it('should return an object', () => {
-        const result = pilaFactory();
-        expect(result).toBeInstanceOf(Object);
+    const strand = mockUpStrand();
+    const testId = 1;
+    let newPila;
+    beforeEach(() => {
+        newPila = pilaFactory(testId, strand);
     });
+
+    it('should return an object', () => {
+        expect(newPila).toBeInstanceOf(Object);
+    });
+
     it('should return an object with testId and dna strand', () => {
-        const strand = mockUpStrand();
-        const testId = 1;
         const sample = { specimenNum: testId, dna: strand };
-        const newPila = pilaFactory(testId, strand);
         expect(newPila).toMatchObject(sample);
     });
 });
@@ -52,20 +58,33 @@ describe('pilaFactory.mutate()', () => {
     beforeEach(() => {
         const testStrand = mockUpStrand();
         const testId = 1;
-        newPila = pilaFactory(testId, testStrand); // newPila is a new object with id and dnaStrand, and a mutate() method
+        newPila = pilaFactory(testId, testStrand);
         originalDNA = [...newPila.dna];
         mutatedPila = newPila.mutate();
     });
 
     it('should return a mutated dna with one random base different', () => {
-        expect(originalDNA).not.toEqual(mutatedPila);
+        const differences = originalDNA.reduce(
+            (count, base, index) =>
+                base !== mutatedPila.dna[index] ? count + 1 : count,
+            0,
+        );
+        expect(differences).toBe(1);
     });
 
     it('the rest of the strand is not changed', () => {
-        const restOfOrigStrand = newPila.dna.slice(1);
-        const restOfMutStrand = mutatedPila.dna.slice(1);
+        const mutationIndex = originalDNA.findIndex(
+            (base, index) => base !== mutatedPila.dna[index],
+        );
+        const restOfOrigStrand = originalDNA.filter(
+            (base, index) => index !== mutationIndex,
+        );
+        const restOfMutStrand = mutatedPila.dna.filter(
+            (base, index) => index !== mutationIndex,
+        );
         expect(restOfOrigStrand).toEqual(restOfMutStrand);
     });
+
     test('mutate() returns the the entire object.', () => {
         expect(mutatedPila).toHaveProperty('specimenNum');
         expect(mutatedPila).toHaveProperty('dna');
@@ -148,7 +167,7 @@ describe('willLikelySurvive()', () => {
         const result = pila4.willLikelySurvive();
         expect(result).toBe(true);
     });
-    it('returns falls for a strand with no "C" or "G"', () => {
+    it('returns fails for a strand with no "C" or "G"', () => {
         const strand = new Array(15).fill('A');
         const pila5 = pilaFactory(5, strand);
         const result = pila5.willLikelySurvive();
@@ -202,5 +221,103 @@ describe('strong30()', () => {
             pila.willLikelySurvive(),
         );
         expect(willAllSurvive).toBe(false);
+    });
+});
+
+describe('complementStrand()', () => {
+    const dnaStrand = ['A', 'T', 'C', 'G', 'A', 'C'];
+    const expectedComplement = ['T', 'A', 'G', 'C', 'T', 'G'];
+    const pila1 = pilaFactory(1, dnaStrand);
+    it('should be a method of the factory (a function)', () => {
+        expect(typeof pila1.complementStrand).toBe('function');
+    });
+
+    it('should return the complimentary DNA strand', () => {
+        const complementStrand = pila1.complementStrand();
+        expect(complementStrand).toEqual(expectedComplement);
+    });
+});
+
+describe('findMostRelated()', () => {
+    let testInstances;
+
+    beforeEach(() => {
+        testInstances = [
+            pilaFactory(1, [
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+            ]),
+            pilaFactory(2, [
+                'A',
+                'T',
+                'C',
+                'G',
+                'G',
+                'G',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+            ]),
+            pilaFactory(3, [
+                'T',
+                'G',
+                'C',
+                'A',
+                'T',
+                'A',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+            ]),
+            pilaFactory(4, [
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+                'G',
+                'A',
+                'T',
+                'C',
+            ]),
+            // Identical to specimen 1
+        ];
+    });
+
+    it('should return the 2 most related pila', () => {
+        const [mostRelated1, mostRelated2] = findMostRelated(testInstances);
+        expect(mostRelated1.specimenNum).toBe(1);
+        expect(mostRelated2.specimenNum).toBe(4);
     });
 });

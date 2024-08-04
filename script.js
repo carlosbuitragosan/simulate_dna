@@ -38,6 +38,7 @@ const pilaFactory = (id, dnaStrand) => ({
         console.log(
             `Specimen #${this.specimenNum} and Specimen #${otherPila.specimenNum} have ${percentage}% DNA in common.`,
         );
+        return percentage;
     },
 
     willLikelySurvive() {
@@ -49,6 +50,17 @@ const pilaFactory = (id, dnaStrand) => ({
         }
         const percentage = Math.round((matchCout / this.dna.length) * 100);
         return percentage >= 60;
+    },
+
+    // return the complementary DNA strand
+    complementStrand() {
+        const complement = {
+            A: 'T',
+            T: 'A',
+            C: 'G',
+            G: 'C',
+        };
+        return this.dna.map((base) => complement[base]);
     },
 });
 
@@ -68,9 +80,26 @@ const strong30 = () => {
     return result;
 };
 
+const findMostRelated = (instances) => {
+    let maxPercentage = 0;
+    let mostRelatedPair = [];
+
+    for (let i = 0; i < instances.length; i++) {
+        for (let j = i + 1; j < instances.length; j++) {
+            const percentage = instances[i].compareDNA(instances[j]);
+            if (percentage > maxPercentage) {
+                maxPercentage = percentage;
+                mostRelatedPair = [instances[i], instances[j]];
+            }
+        }
+    }
+    return mostRelatedPair;
+};
+
 module.exports = {
     returnRandBase,
     mockUpStrand,
     pilaFactory,
     strong30,
+    findMostRelated,
 };
